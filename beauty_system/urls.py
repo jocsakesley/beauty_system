@@ -19,8 +19,8 @@ from django.urls import path, include
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r'api/v1/professionals', ProfessionalViewSet)
-router.register(r'api/v1/business', BusinessViewSet)
+router.register(r'api/v1/professionals', ProfessionalViewSet, basename='professionals')
+router.register(r'api/v1/business', BusinessViewSet, basename="business")
 router.register(r'api/v1/employees', EmployeeViewSet)
 router.register(r'api/v1/services', ServiceViewSet, basename='services')
 

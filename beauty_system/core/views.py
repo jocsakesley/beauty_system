@@ -7,17 +7,27 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class ProfessionalViewSet(ModelViewSet):
-    queryset = Professional.objects.all()
     serializer_class = ProfessionalSerializer
 
+    def get_queryset(self):
+        professional= Professional.objects.filter(id=self.request.user.id)
+        return professional
+
 class BusinessViewSet(ModelViewSet):
-    queryset = Business.objects.all()
     serializer_class = BusinessSerializer
 
+    def get_queryset(self):
+        business = Business.objects.filter(id=self.request.user.id)
+        return business
 
 class EmployeeViewSet(ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        employee = Employee.objects.filter(employee_business__id=self.request.user.id)
+        return employee
 
 class ServiceViewSet(ModelViewSet):
     serializer_class = ServiceSerializer
