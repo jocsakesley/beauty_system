@@ -22,7 +22,7 @@ router = routers.DefaultRouter()
 router.register(r'api/v1/professionals', ProfessionalViewSet)
 router.register(r'api/v1/business', BusinessViewSet)
 router.register(r'api/v1/employees', EmployeeViewSet)
-router.register(r'api/v1/services', ServiceViewSet)
+router.register(r'api/v1/services', ServiceViewSet, basename='services')
 
 
 urlpatterns = [

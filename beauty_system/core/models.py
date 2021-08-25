@@ -14,7 +14,6 @@ class User(AbstractUser):
 
 class Professional(User):
     cpf = models.CharField(max_length=14)
-    services = models.ManyToManyField("Service", related_name='user', blank=True)
 
     class Meta:
         verbose_name = "Professional"
@@ -24,7 +23,7 @@ class Professional(User):
 
 class Business(User):
     cnpj = models.CharField(max_length=18)
-    employees = models.ManyToManyField("Employee", blank=True)
+    employees = models.ManyToManyField("Employee", blank=True, related_name="employee_business")
 
     class Meta:
         verbose_name = "Business"
@@ -40,7 +39,7 @@ class Employee(models.Model):
     cpf = models.CharField(max_length=14)
     address = models.CharField(max_length=255)
     phone = models.CharField(max_length=20)
-    services = models.ManyToManyField("Service")
+    services = models.ManyToManyField("Service", related_name="user_employee")
 
     def __str__(self):
         return self.name
@@ -50,6 +49,7 @@ class Service(models.Model):
     name = models.CharField(max_length=150)
     value = models.FloatField(max_length=6)
     duration = models.DurationField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="service_user")
 
     def __str__(self):
         return self.name
