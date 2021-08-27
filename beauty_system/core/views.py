@@ -1,3 +1,4 @@
+from rest_framework import permissions
 from beauty_system.core.serializers import BusinessSerializer, EmployeeSerializer, ProfessionalSerializer, ServicePostSerializer, ServiceSerializer
 from beauty_system.core.models import Business, Employee, Professional, Service
 from rest_framework.viewsets import ModelViewSet
@@ -12,6 +13,15 @@ class ProfessionalViewSet(ModelViewSet):
     def get_queryset(self):
         professional= Professional.objects.filter(id=self.request.user.id)
         return professional
+
+    def create(self, request, *args, **kwargs):
+        super().create(request, *args, **kwargs)
+        return Response({"msg": "Perfil criado com sucesso"}, status=status.HTTP_201_CREATED)
+    
+    def retrieve(self, request, *args, **kwargs):
+        if not request.user.id:
+            return Response({"msg": "Acesso negado"}, status=status.HTTP_401_UNAUTHORIZED)
+        return super().retrieve(request, *args, **kwargs)
 
 class BusinessViewSet(ModelViewSet):
     serializer_class = BusinessSerializer
