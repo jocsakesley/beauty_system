@@ -1,7 +1,9 @@
 from rest_framework import permissions
+from rest_framework.fields import REGEX_TYPE
+from rest_framework.views import APIView
 from beauty_system.core.serializers import BusinessSerializer, EmployeeSerializer, ProfessionalSerializer, ServicePostSerializer, ServiceSerializer
 from beauty_system.core.models import Business, Employee, Professional, Service
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -23,12 +25,26 @@ class ProfessionalViewSet(ModelViewSet):
             return Response({"msg": "Acesso negado"}, status=status.HTTP_401_UNAUTHORIZED)
         return super().retrieve(request, *args, **kwargs)
 
+class AllProfessionalViewSet(ModelViewSet):
+    queryset = Professional.objects.all()
+    serializer_class = ProfessionalSerializer
+    
+    def create(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 class BusinessViewSet(ModelViewSet):
     serializer_class = BusinessSerializer
 
     def get_queryset(self):
         business = Business.objects.filter(id=self.request.user.id)
         return business
+
+class AllBusinessViewSet(ModelViewSet):
+    queryset = Business.objects.all()
+    serializer_class = BusinessSerializer
+ 
+    def create(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 class EmployeeViewSet(ModelViewSet):
     queryset = Employee.objects.all()
