@@ -61,7 +61,7 @@ class DateTimeSerializer(serializers.ModelSerializer):
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = ("id", "name", "email", "phone", "schedule_customer")
+        fields = ("id", "name", "email", "phone")
 
     def create(self, validated_data):
         customer = super().create(validated_data)
