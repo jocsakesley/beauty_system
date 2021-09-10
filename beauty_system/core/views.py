@@ -1,4 +1,5 @@
-from beauty_system.core.serializers import BusinessSerializer, CustomerSerializer, DateTimeSerializer, EmployeeSerializer, ProfessionalSerializer, ScheduleSerializer, ServicePostSerializer, ServiceSerializer
+from beauty_system.tenant.utils import tenant_from_request
+from beauty_system.core.serializers import BusinessSerializer, CustomerSerializer, DateTimeSerializer, EmployeeSerializer, ProfessionalSerializer, ScheduleSerializer, ServiceSerializer
 from beauty_system.core.models import Business, Customer, DateTime, Employee, Professional, Schedule, Service
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
@@ -53,13 +54,15 @@ class AllBusinessViewSet(ModelViewSet):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 class EmployeeViewSet(ModelViewSet):
+    queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     # permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        employee = Employee.objects.filter(employee_business__id=self.request.user.id)
-        return employee
     
+    def get_queryset(self):
+        tenant = tenant_from_request(self.request)
+        return super().get_queryset().filter(tenant=tenant)
+        
     @action(detail=True, methods=["GET"])
     def services(self, request, pk):
         services = Service.objects.filter(user_employee__id=pk)
@@ -67,15 +70,16 @@ class EmployeeViewSet(ModelViewSet):
         if not serializer.is_valid():
             return Response(serializer.errors)
         return Response(serializer.data)
+    
+    
 
 class ServiceViewSet(ModelViewSet):
+    queryset = Service.objects.all()
     serializer_class = ServiceSerializer
-    # permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        print(self.request.user.id)
-        services = Service.objects.filter(user_employee__employee_business__id=self.request.user.id)
-        return services
+        tenant = tenant_from_request(self.request)
+        return super().get_queryset().filter(tenant=tenant)
     
 
 class ScheduleViewSet(ModelViewSet):
@@ -90,3 +94,7 @@ class DateTimeViewSet(ModelViewSet):
 class CustomerViewSet(ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+
+    def get_queryset(self):
+        tenant = tenant_from_request(self.request)
+        return super().get_queryset().filter(tenant=tenant)

@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     'drf_yasg',
     'corsheaders',
     'rest_framework_simplejwt',
-    'beauty_system.core'
+    'beauty_system.core',
+    'beauty_system.tenant',
+
 ]
 
 MIDDLEWARE = [

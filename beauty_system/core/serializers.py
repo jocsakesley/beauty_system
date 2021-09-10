@@ -1,3 +1,4 @@
+from beauty_system.tenant.utils import tenant_from_request
 from rest_framework import serializers
 from beauty_system.core.models import Business, Customer, DateTime, Employee, Schedule, Service, User, Professional
 
@@ -46,12 +47,6 @@ class ServiceSerializer(serializers.ModelSerializer):
         model = Service
         fields = ("id", "name", "value", "duration")
 
-class ServicePostSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Service
-        fields = ("id", "name", "value", "duration", "user_employee")
-
 
 class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -67,3 +62,9 @@ class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ("id", "name", "email", "phone", "schedule_customer")
+
+    def create(self, validated_data):
+        customer = super().create(validated_data)
+        customer.tenant = tenant_from_request(self.context['request'])
+        customer.save()
+        return customer

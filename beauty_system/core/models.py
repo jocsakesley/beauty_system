@@ -5,9 +5,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.db.models import Sum
+from beauty_system.tenant.models import TenantAwareModel
 
 
-class User(AbstractUser):
+class User(AbstractUser, TenantAwareModel):
     name = models.CharField(max_length=150)
     address = models.CharField(max_length=255)
     phone = models.CharField(max_length=20)
@@ -38,7 +39,7 @@ class Business(User):
         return self.name
 
 
-class Employee(models.Model):
+class Employee(TenantAwareModel):
     name = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
     cpf = models.CharField(max_length=14)
@@ -50,7 +51,7 @@ class Employee(models.Model):
         return self.name
 
 
-class Service(models.Model):
+class Service(TenantAwareModel):
     name = models.CharField(max_length=150)
     value = models.FloatField(max_length=6)
     duration = models.DurationField()
@@ -59,7 +60,7 @@ class Service(models.Model):
     def __str__(self):
         return self.name
 
-class Schedule(models.Model):
+class Schedule(TenantAwareModel):
    
     professional = models.ForeignKey(Employee, on_delete=models.CASCADE)
     services = models.ManyToManyField(Service)
@@ -68,7 +69,7 @@ class Schedule(models.Model):
     def __str__(self):
         return f"{self.customer.name} agendada com {self.professional.name}"
 
-class DateTime(models.Model):
+class DateTime(TenantAwareModel):
 
     TIMES = (
        (dt.time(8,0,0), "08:00:00"), 
@@ -96,7 +97,7 @@ class DateTime(models.Model):
         total_value = Service.objects.filter(user_employee=self.schedule.professional).aggregate(Sum("value"))
         return total_value["value__sum"]
 
-class Customer(models.Model):
+class Customer(TenantAwareModel):
     name = models.CharField(max_length=150)
     email = models.EmailField()
     phone = models.CharField(max_length=50)
