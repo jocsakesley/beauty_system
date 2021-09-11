@@ -51,7 +51,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'tenant_schemas.middleware.TenantMiddleware',
+    # 'tenant_schemas.middleware.TenantMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -104,9 +104,9 @@ default_dburl = "sqlite:///" + os.path.join(BASE_DIR, "db.sqlite3")
 DATABASES = {"default": config("DATABASE_URL", default=default_dburl, cast=dburl)}
 #DATABASES['default']['ENGINE'] = 'tenant_schemas.postgresql_backend'
 
-DATABASE_ROUTERS = (
-    'tenant_schemas.routers.TenantSyncRouter',
-)
+# DATABASE_ROUTERS = (
+#     'tenant_schemas.routers.TenantSyncRouter',
+# )
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
