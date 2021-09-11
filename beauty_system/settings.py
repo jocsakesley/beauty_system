@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'tenant_schemas.middleware.TenantMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -80,6 +81,12 @@ TEMPLATES = [
     },
 ]
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+
+)
+
+
 WSGI_APPLICATION = 'beauty_system.wsgi.application'
 
 
@@ -95,7 +102,11 @@ WSGI_APPLICATION = 'beauty_system.wsgi.application'
 
 default_dburl = "sqlite:///" + os.path.join(BASE_DIR, "db.sqlite3")
 DATABASES = {"default": config("DATABASE_URL", default=default_dburl, cast=dburl)}
+#DATABASES['default']['ENGINE'] = 'tenant_schemas.postgresql_backend'
 
+DATABASE_ROUTERS = (
+    'tenant_schemas.routers.TenantSyncRouter',
+)
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
