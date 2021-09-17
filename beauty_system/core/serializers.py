@@ -1,6 +1,6 @@
-from beauty_system.tenant.utils import tenant_from_request
 from rest_framework import serializers
-from beauty_system.core.models import Business, Customer, DateTime, Employee, Schedule, Service, User, Professional
+from beauty_system.core.models import Customer, DateTime, Employee, Schedule, Service
+from beauty_system.authentication.models import User, Business, Professional
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,13 +32,13 @@ class ProfessionalSerializer(UserSerializer):
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
-        fields = ("id", "name", "email", "cpf", "phone", "address", "services", "employee_business")
+        fields = ("id", "name", "email", "cpf", "phone", "address", "services")
 
 
 class BusinessSerializer(UserSerializer):
     class Meta:
         model = Business
-        fields = ("id", "name", "email", "password", "cnpj", "phone", "address", "employees")
+        fields = ("id", "name", "email", "password", "cnpj", "phone", "address")
 
 
 class ServiceSerializer(serializers.ModelSerializer):
@@ -63,8 +63,8 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = ("id", "name", "email", "phone")
 
-    def create(self, validated_data):
-        customer = super().create(validated_data)
-        customer.tenant = tenant_from_request(self.context['request'])
-        customer.save()
-        return customer
+    # def create(self, validated_data):
+    #     customer = super().create(validated_data)
+    #     customer.tenant = tenant_from_request(self.context['request'])
+    #     customer.save()
+    #     return customer

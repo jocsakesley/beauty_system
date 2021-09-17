@@ -13,8 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-
-from beauty_system.core.views import  CustomerViewSet, DateTimeViewSet, EmployeeViewSet, ScheduleViewSet, ServiceViewSet
+from beauty_system.tenant.views import ClientViewSet, DomainViewSet
+from beauty_system.core.views import AllBusinessViewSet, AllProfessionalViewSet, BusinessViewSet, ProfessionalViewSet
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
@@ -25,12 +25,12 @@ from drf_yasg import openapi
 
 
 router = routers.DefaultRouter()
-router.register(r'api/v1/employees', EmployeeViewSet, basename="employees")
-router.register(r'api/v1/services', ServiceViewSet, basename='services')
-router.register(r'api/v1/schedules', ScheduleViewSet, basename='schedules')
-router.register(r'api/v1/datetimes', DateTimeViewSet, basename='datetimes')
-router.register(r'api/v1/customers', CustomerViewSet, basename='customers')
-
+router.register(r'api/v1/professional', ProfessionalViewSet, basename='professional')
+router.register(r'api/v1/all_professionals', AllProfessionalViewSet, basename='all_professionals')
+router.register(r'api/v1/business', BusinessViewSet, basename="business")
+router.register(r'api/v1/all_business', AllBusinessViewSet, basename="all_business")
+router.register(r'api/v1/clients', ClientViewSet, basename='clients')
+router.register(r'api/v1/domain', DomainViewSet, basename='domain')
 
 
 schema_view = get_schema_view(

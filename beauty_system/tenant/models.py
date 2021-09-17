@@ -1,14 +1,15 @@
 from django.db import models
+from django_tenants.models import TenantMixin, DomainMixin
 
-class Tenant(models.Model):
-    name = models.CharField(max_length=255)
-    subdomain = models.CharField(max_length=255, unique=True)
+class Client(TenantMixin):
+    name = models.CharField(max_length=100)
+    created_on = models.DateField(auto_now_add=True)
+
+    # default true, schema will be automatically created and synced when it is saved
+    auto_create_schema = True
 
     def __str__(self):
         return self.name
 
-class TenantAwareModel(models.Model):
-    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, null=True)
-
-    class Meta:
-        abstract = True
+class Domain(DomainMixin):
+    pass

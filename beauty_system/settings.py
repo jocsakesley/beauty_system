@@ -29,12 +29,15 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=True, cast=bool)
 
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="", cast=Csv())
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="*", cast=Csv())
 
 
 # Application definition
 
-INSTALLED_APPS = [
+SHARED_APPS = [
+    'django_tenants',
+    'beauty_system.tenant',
+    'beauty_system.authentication',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,13 +48,42 @@ INSTALLED_APPS = [
     'drf_yasg',
     'corsheaders',
     'rest_framework_simplejwt',
-    'beauty_system.core',
-    'beauty_system.tenant',
+      
 
 ]
 
+
+TENANT_APPS = (
+    'beauty_system.core',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+)
+
+INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
+# INSTALLED_APPS = [
+#     # 'django_tenants',
+#     'django.contrib.admin',
+#     'django.contrib.auth',
+#     'django.contrib.contenttypes',
+#     'django.contrib.sessions',
+#     'django.contrib.messages',
+#     'django.contrib.staticfiles',
+#     'rest_framework',
+#     'drf_yasg',
+#     'corsheaders',
+#     'rest_framework_simplejwt',
+#     'beauty_system.core',
+#     'beauty_system.tenant',
+#     'beauty_system.authentication'
+
+# ]
+
 MIDDLEWARE = [
-    # 'tenant_schemas.middleware.TenantMiddleware',
+    'django_tenants.middleware.main.TenantMainMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -64,6 +96,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'beauty_system.urls'
+
+PUBLIC_SCHEMA_URLCONF = 'beauty_system.urls_public'
+
+TENANT_MODEL = "tenant.Client" 
+
+TENANT_DOMAIN_MODEL = "tenant.Domain"
 
 TEMPLATES = [
     {
@@ -91,22 +129,16 @@ WSGI_APPLICATION = 'beauty_system.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
 
 default_dburl = "sqlite:///" + os.path.join(BASE_DIR, "db.sqlite3")
 DATABASES = {"default": config("DATABASE_URL", default=default_dburl, cast=dburl)}
-#DATABASES['default']['ENGINE'] = 'tenant_schemas.postgresql_backend'
+# DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
+DATABASES['default']['ENGINE'] = 'django_tenants.postgresql_backend'
 
-# DATABASE_ROUTERS = (
-#     'tenant_schemas.routers.TenantSyncRouter',
-# )
+DATABASE_ROUTERS = (
+    'django_tenants.routers.TenantSyncRouter',
+)
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -147,7 +179,11 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-AUTH_USER_MODEL = "core.User"
+MEDIA_ROOT = '/data/media'
+MEDIA_URL = '/media/'
+
+AUTH_USER_MODEL = "authentication.User"
+
 
 #REST_FRAMEWORK
 
@@ -216,3 +252,5 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=60),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
+
+SHOW_PUBLIC_IF_NO_TENANT_FOUND = True
